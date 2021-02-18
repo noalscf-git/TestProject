@@ -3,9 +3,11 @@ import {Button, SafeAreaView, ScrollView, TextInput, Text, View, StyleSheet} fro
 import {useState} from "react";
 import TaskActions from "../actions/TaskActions";
 import { useDispatch } from 'react-redux';
+import { globalStyles } from '../style';
+import { useMyAlert } from '../MyAlert';
 
-function validateEmail(email) {
-    var pattern  = RegExp(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
+const validateEmail=(email:string)=> {
+    const pattern  = RegExp(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
     return pattern.test(email);
 }
 
@@ -16,16 +18,17 @@ export const AddTascScreen: React.FC<any> = ({navigation}) => {
     const [emailValue, setEmailValue] = useState('')
     const [textValue, setTextValue] = useState('')
 
-    const [usernameIsValid, setUsernameIsValid] = useState(true)
     const [emailIsValid, setEmailIsValid] = useState(true)
     const [textIsValid, setTextIsValid] = useState(true)
 
     const dispatch = useDispatch();
 
+    const myAlert=useMyAlert()
+
     const addTask = async () => {
         try {
-            if(usernameValue.trim()==="") setUsernameIsValid(false) 
-                else setUsernameIsValid(true)
+            if(usernameValue.trim()==="") myAlert('Имя пользователя не введено')
+
             if(!validateEmail(emailValue.trim())) setEmailIsValid(false)
                 else setEmailIsValid(true)
             if(textValue.trim()=="") setTextIsValid(false)
@@ -44,7 +47,7 @@ export const AddTascScreen: React.FC<any> = ({navigation}) => {
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={globalStyles.container}>
         <ScrollView style={{width: '100%'}}>
         <TextInput
             editable={true}
@@ -56,7 +59,6 @@ export const AddTascScreen: React.FC<any> = ({navigation}) => {
             }}
             style={styles.input}
             />
-            {!usernameIsValid&&<Text style={{color:'red'}}>Имя пользователя не введено</Text>}
         <TextInput
             editable={true}
             placeholderTextColor='#a3a3aa'
@@ -88,11 +90,6 @@ export const AddTascScreen: React.FC<any> = ({navigation}) => {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 24,
-        backgroundColor: "#fff"
-      },
     input:{
         width: '100%', 
         color: "#04162d", 

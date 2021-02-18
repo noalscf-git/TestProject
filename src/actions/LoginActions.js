@@ -11,7 +11,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 export const SET_TOKEN = "SET_TOKEN";
 const tokenStoreKey = 'tokenStoreKey';
 export const url = 'https://uxcandy.com/~shapoval/test-task-backend/v2';
-export const developer = '1234';
+export const developer = '12345';
 const LoginActions = {
     checkToken: () => {
         return (dispatch) => __awaiter(void 0, void 0, void 0, function* () {
@@ -37,10 +37,8 @@ const LoginActions = {
                 },
                 body: formData
             });
-            console.log("login response", response);
             if (response.ok) {
                 const json = yield response.json();
-                console.log("login json", json);
                 if (json.status === "ok") {
                     yield AsyncStorage.setItem(tokenStoreKey, json.message.token);
                     dispatch({
@@ -59,7 +57,6 @@ const LoginActions = {
     },
     logout: () => {
         return (dispatch) => __awaiter(void 0, void 0, void 0, function* () {
-            console.log("logout");
             yield AsyncStorage.removeItem(tokenStoreKey);
             dispatch({
                 type: SET_TOKEN,

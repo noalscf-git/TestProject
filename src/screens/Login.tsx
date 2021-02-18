@@ -1,22 +1,24 @@
 import React, {useState} from 'react';
-import {View, Text, ScrollView, StyleSheet, TextInput, TouchableOpacity, Button, SafeAreaView} from 'react-native'
+import {View, Text, ScrollView, StyleSheet, TextInput, Button, SafeAreaView} from 'react-native'
+
 import {useDispatch, useSelector} from 'react-redux'
 import LoginActions from "../actions/LoginActions";
 import { LoginState } from '../reducers/loginReducer';
 import { AppState } from '../reducers/rootReducer';
+import { globalStyles } from '../style';
 
 export const LoginScreen:React.FC = () => {
-    const [usernameValue, setUsernameValue] = useState('')
-    const [passwordValue, setPasswordValue] = useState('')
+    const [usernameValue, setUsernameValue] = useState<string>('')
+    const [passwordValue, setPasswordValue] = useState<string>('')
 
     const { token } = useSelector<AppState,LoginState>(({ login }) => login);
 
     const dispatch = useDispatch();
 
+
     const login = async () => {
         try {
-            const result: any = await dispatch(LoginActions.login(usernameValue, passwordValue));
-            return null;
+            await dispatch(LoginActions.login(usernameValue, passwordValue));
         } catch (error) {
             console.log("login error", error)
         }
@@ -26,7 +28,6 @@ export const LoginScreen:React.FC = () => {
     const logout = async () => {
         try {
             await dispatch(LoginActions.logout());
-            return null;
         } catch (error) {
             console.log("logout error", error)
         }
@@ -35,7 +36,7 @@ export const LoginScreen:React.FC = () => {
 
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={globalStyles.container}>
             {token===''?
             <ScrollView style={{width: '100%'}}>
                     <TextInput
@@ -49,17 +50,17 @@ export const LoginScreen:React.FC = () => {
                         style={styles.input}
                     />
 
-                        <TextInput
-                            editable={true}
-                            secureTextEntry={true}
-                            placeholderTextColor='#a3a3aa'
-                            placeholder='Введите пароль'
-                            value={passwordValue}
-                            onChangeText={(e) => {
-                                setPasswordValue(e)
-                            }}
-                            style={styles.input}
-                        />
+                    <TextInput
+                        editable={true}
+                        secureTextEntry={true}
+                        placeholderTextColor='#a3a3aa'
+                        placeholder='Введите пароль'
+                        value={passwordValue}
+                        onChangeText={(e) => {
+                            setPasswordValue(e)
+                        }}
+                        style={styles.input}
+                    />
                 
                 <View style={styles.button}>
                     <Button onPress={login} title={'Войти'}/>
@@ -68,7 +69,7 @@ export const LoginScreen:React.FC = () => {
             :
             <View>
                 <Text>Вы вошли под администратором</Text>
-                <View style={{paddingTop:20}}>
+                <View style={styles.button}>
                     <Button onPress={logout} title={'Выйти'}/>
                 </View>
             </View>    
@@ -79,11 +80,6 @@ export const LoginScreen:React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      padding: 24,
-      backgroundColor: "#fff"
-    },
     input:{
         width: '100%', 
         color: "#04162d", 
@@ -94,7 +90,7 @@ const styles = StyleSheet.create({
     button:{
         paddingTop:20
     }
-  });
+});
 
 
 

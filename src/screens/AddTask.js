@@ -12,24 +12,24 @@ import { Button, SafeAreaView, ScrollView, TextInput, Text, View, StyleSheet } f
 import { useState } from "react";
 import TaskActions from "../actions/TaskActions";
 import { useDispatch } from 'react-redux';
-function validateEmail(email) {
-    var pattern = RegExp(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+import { globalStyles } from '../style';
+import { useMyAlert } from '../MyAlert';
+const validateEmail = (email) => {
+    const pattern = RegExp(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
     return pattern.test(email);
-}
+};
 export const AddTascScreen = ({ navigation }) => {
     const [usernameValue, setUsernameValue] = useState('');
     const [emailValue, setEmailValue] = useState('');
     const [textValue, setTextValue] = useState('');
-    const [usernameIsValid, setUsernameIsValid] = useState(true);
     const [emailIsValid, setEmailIsValid] = useState(true);
     const [textIsValid, setTextIsValid] = useState(true);
     const dispatch = useDispatch();
+    const myAlert = useMyAlert();
     const addTask = () => __awaiter(void 0, void 0, void 0, function* () {
         try {
             if (usernameValue.trim() === "")
-                setUsernameIsValid(false);
-            else
-                setUsernameIsValid(true);
+                myAlert('Имя пользователя не введено');
             if (!validateEmail(emailValue.trim()))
                 setEmailIsValid(false);
             else
@@ -50,12 +50,11 @@ export const AddTascScreen = ({ navigation }) => {
         }
         return null;
     });
-    return (<SafeAreaView style={styles.container}>
+    return (<SafeAreaView style={globalStyles.container}>
         <ScrollView style={{ width: '100%' }}>
         <TextInput editable={true} placeholderTextColor='#a3a3aa' placeholder='Введите имя пользователя' value={usernameValue} onChangeText={(e) => {
         setUsernameValue(e);
     }} style={styles.input}/>
-            {!usernameIsValid && <Text style={{ color: 'red' }}>Имя пользователя не введено</Text>}
         <TextInput editable={true} placeholderTextColor='#a3a3aa' placeholder='Введите email-адрес пользователя' value={emailValue} onChangeText={(e) => {
         setEmailValue(e);
     }} style={styles.input}/>
@@ -71,11 +70,6 @@ export const AddTascScreen = ({ navigation }) => {
     </SafeAreaView>);
 };
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 24,
-        backgroundColor: "#fff"
-    },
     input: {
         width: '100%',
         color: "#04162d",

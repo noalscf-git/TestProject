@@ -1,7 +1,6 @@
 import {
     AppState
 } from "react-native";
-import { Dispatch } from "redux";
 import { ThunkAction } from "redux-thunk";
 import { Action } from 'redux';
 import AsyncStorage from "@react-native-community/async-storage";
@@ -29,7 +28,8 @@ export type WithLoginActions = {
 const tokenStoreKey: string = 'tokenStoreKey';
 
 export const url = 'https://uxcandy.com/~shapoval/test-task-backend/v2'
-export const developer='1234'
+
+export const developer='12345'
 
 const LoginActions: WithLoginActions = {
     checkToken: () => {
@@ -58,10 +58,8 @@ const LoginActions: WithLoginActions = {
                 },
                 body: formData
               });
-              console.log("login response",response)
             if (response.ok) {
                 const json = await response.json();
-                console.log("login json",json)
                 if(json.status==="ok"){
                     await AsyncStorage.setItem(tokenStoreKey, json.message.token);
                     dispatch({
@@ -80,7 +78,6 @@ const LoginActions: WithLoginActions = {
 
     logout: () => {
         return async (dispatch) => {
-            console.log("logout")
                 await AsyncStorage.removeItem(tokenStoreKey)
                 dispatch({
                     type: SET_TOKEN,

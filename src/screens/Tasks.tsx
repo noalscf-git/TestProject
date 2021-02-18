@@ -1,34 +1,54 @@
 import * as React from 'react';
 import {Button, Text, View, StyleSheet, ScrollView, SafeAreaView, ActivityIndicator} from 'react-native'
 import {useEffect, useState} from "react";
-import TaskActions from "../actions/TaskActions";
+import TaskActions, { TTasks } from "../actions/TaskActions";
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../reducers/rootReducer';
 import { TaskState } from '../reducers/taskReducer';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { LoginState } from '../reducers/loginReducer';
 import { Picker } from '@react-native-picker/picker';
+import { useNavigation } from '@react-navigation/native';
+import { globalStyles } from '../style';
 
 
-export const Status=[
-    {id:0, text:'задача не выполнена'},
-    {id:1, text:'задача не выполнена, отредактирована админом'},
-    {id:10, text:'задача выполнена'},
-    {id:11, text:'задача отредактирована админом и выполнена'}
-]
+export const Status= new Map()
+                .set(0,'задача не выполнена')
+                .set(1,'задача не выполнена, отредактирована админом')
+                .set(10,'задача выполнена')
+                .set(11,'задача отредактирована админом и выполнена')
 
+interface ItemProps{
+    item: TTasks,
+    onPress?: () => void,
+}
 
-export const TaskScreen: React.FC<any> = ({navigation}) => {
+const ItemTask:React.FC<ItemProps>=({item,onPress})=>{
+    return(
+        <View key={item.id} style={styles.task}>
+            <TouchableOpacity onPress={onPress} >
+                <Text>id: {item.id}</Text>
+                <Text>Имя пользователя: {item.username}</Text>
+                <Text>Email пользователя: {item.email}</Text>
+                <Text>Текст задачи: {item.text}</Text>
+                <Text>Статус: {Status.get(item.status)}</Text>
+        </TouchableOpacity>
+        </View>
+    )
+}
 
-    const [sortField, setSortField]=useState('id')
-    const [sortDirection , setSortDirection]=useState('asc')
-    const [page , setPage]=useState(1)
-    const [pagination , setPagination]=useState([])
+export const TaskScreen: React.FC = () => {
+
+    const [sortField, setSortField]=useState<string>('id')
+    const [sortDirection, setSortDirection]=useState<string>('asc')
+    const [page, setPage]=useState<number>(1)
+    const [pagination , setPagination]=useState<Array<number>>([])
 
     const { tasks,taskCount,loading } = useSelector<AppState,TaskState>(({ tasks }) => tasks);
     const { token } = useSelector<AppState,LoginState>(({ login }) => login);
 
     const dispatch = useDispatch();
+    const navigation=useNavigation()
 
     useEffect(()=>{
         getTasks()
@@ -52,25 +72,24 @@ export const TaskScreen: React.FC<any> = ({navigation}) => {
             return null;
         } catch (error) {
             console.log("getTasks error", error)
-            //alert("getTasks входа")
         }
         return null
     }
 
-    const addTask = async () => {
+    const addTask = () => {
         navigation.navigate("AddTask")
         return null
     }
 
+
     const onPressTask = (id:number) => {
         token!==''&&navigation.navigate("EditTask",{id:id})
+        return null
     }
 
 
-
-
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={globalStyles.container}>
             <ScrollView style={{width: '100%'}}>
                 <Button onPress={addTask} title={'Создать новую задачу'}/>
                 {loading?
@@ -82,10 +101,9 @@ export const TaskScreen: React.FC<any> = ({navigation}) => {
                     <View style={{paddingTop:10}}>
                         <Text style={{paddingLeft:7}}>Сортировка:</Text>
                         <Picker
-
                             selectedValue={sortField}
                             style={{height:20,width: 200}}
-                            onValueChange={(itemValue:string) => {console.log("itemValue",itemValue);setSortField(itemValue)}
+                            onValueChange={(itemValue:string) => {setSortField(itemValue)}
                             }
                         >
                                 <Picker.Item label="id" value="id" />
@@ -110,15 +128,7 @@ export const TaskScreen: React.FC<any> = ({navigation}) => {
 
                     {tasks&&tasks.map((item)=>{
                         return(
-                            <View key={item.id} style={styles.task}>
-                                <TouchableOpacity onPress={()=>onPressTask(item.id)} >
-                                    <Text>id: {item.id}</Text>
-                                    <Text>Имя пользователя: {item.username}</Text>
-                                    <Text>Email пользователя: {item.email}</Text>
-                                    <Text>Текст задачи: {item.text}</Text>
-                                    <Text>Статус: {Status.find(items=>items.id===item.status).text}</Text>
-                                </TouchableOpacity>
-                            </View>
+                           <ItemTask key={item.id} item={item} onPress={()=>onPressTask(item.id)}/>
                         )
                     })
                     }
@@ -142,18 +152,6 @@ export const TaskScreen: React.FC<any> = ({navigation}) => {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 24,
-        backgroundColor: "#fff"
-      },
-    input:{
-        width: '100%', 
-        color: "#04162d", 
-        padding:0,
-        paddingTop:20,
-        borderBottomWidth:StyleSheet.hairlineWidth
-    },
     task:{
         width: '100%', 
         padding:10,

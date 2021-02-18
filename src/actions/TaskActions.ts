@@ -1,7 +1,6 @@
 import {
     AppState
 } from "react-native";
-import { Dispatch } from "redux";
 import { ThunkAction } from "redux-thunk";
 import { Action } from 'redux';
 import { developer, url } from "./LoginActions";
@@ -35,9 +34,8 @@ export interface SetLoading {
 export type Actions=SetTasks|SetLoading
 
 
-
 export type WithTaskActions = {
-    getTasks: (sort_field?:"id" | "username" | "email" | "status" |null, sort_direction?:"asc" | "desc" |null, page?:number|null) => TAction<void>,
+    getTasks: (sort_field?:string |null, sort_direction?:string |null, page?:number|null) => TAction<void>,
     addTasks: (username:string, email:string, text:string) => TAction<void>,
     editTasks: (id:number, text:string, isClose :boolean) => TAction<void>,
 }
@@ -90,10 +88,8 @@ const TaskActions: WithTaskActions = {
                     },
                     body: formData
                 });
-                console.log("addTasks response",response)
             if (response.ok) {
                 const json = await response.json();
-                console.log("addTasks json",json)
                 if(json.status==="ok"){
                     dispatch({
                         type: SET_TASKS,
@@ -113,12 +109,7 @@ const TaskActions: WithTaskActions = {
 
             const { tasks } = getState().tasks;
             const { token } = getState().login;
-            console.log("tasks",tasks)
-            console.log("token",token)
-            console.log("id",id)
             const status=tasks.find((item)=>item.id===id).text===text?(isClose?"10":"0"):(isClose?"11":"1")
-            console.log("new status",status)
-
 
             const formData = new FormData();
             formData.append('token', token);

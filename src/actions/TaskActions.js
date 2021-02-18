@@ -55,10 +55,8 @@ const TaskActions = {
                 },
                 body: formData
             });
-            console.log("addTasks response", response);
             if (response.ok) {
                 const json = yield response.json();
-                console.log("addTasks json", json);
                 if (json.status === "ok") {
                     dispatch({
                         type: SET_TASKS,
@@ -79,11 +77,7 @@ const TaskActions = {
         return (dispatch, getState) => __awaiter(void 0, void 0, void 0, function* () {
             const { tasks } = getState().tasks;
             const { token } = getState().login;
-            console.log("tasks", tasks);
-            console.log("token", token);
-            console.log("id", id);
             const status = tasks.find((item) => item.id === id).text === text ? (isClose ? "10" : "0") : (isClose ? "11" : "1");
-            console.log("new status", status);
             const formData = new FormData();
             formData.append('token', token);
             formData.append('text', text);
